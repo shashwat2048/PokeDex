@@ -4,6 +4,9 @@ import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { FcSearch } from "react-icons/fc";
 import PokemonModal from "./PokemonModal";
 import logoimg from "../assets/pokeball.png";
+import { MdMusicNote, MdMusicOff} from "react-icons/md";
+import bgMusic from "../assets/bgMusic.mp3";
+
 
 export default function PokemonData() {
   const [allPokemonData, setallPokemonData] = useState([]);
@@ -15,6 +18,8 @@ export default function PokemonData() {
   const [currPage, setCurrPage] = useState(1);
   const [selected, setSelected] = useState(null);
   const pageSize = 12;
+  const [music] = useState(new Audio(bgMusic));
+  const [isBgPlaying, setIsBgPlaying] = useState(false);
 
   const typeColors = {
     normal: 'bg-[#A8A77A]',
@@ -121,6 +126,20 @@ export default function PokemonData() {
   }
 
 
+  const handleBgMusic = () => {
+    music.loop = true;
+    music.volume = 0.1;
+    if (isBgPlaying) {
+        music.pause();
+        setIsBgPlaying(false);
+    } else {
+        music.play().catch((err) => console.error("Error playing audio:", err));
+        setIsBgPlaying(true);
+    }
+}
+
+
+
   return (
     <section className="container mx-auto px-2 sm:px-4 py-8">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0 sticky top-0 p-2 z-20 bg-[#d4eeff]">
@@ -131,6 +150,9 @@ export default function PokemonData() {
         </h1>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto">
+            <button onClick={handleBgMusic}>
+                {isBgPlaying ? <MdMusicNote /> : <MdMusicOff />}
+            </button>
           <div className="relative text-gray-400 focus-within:text-gray-600 flex-1 sm:flex-none">
             <FcSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" />
             <input
