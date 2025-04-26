@@ -1,16 +1,15 @@
 import clsx from "clsx";
+import { useRef } from "react";
 export default function PokemonCard({pokemon}){
-    const cryUrl = pokemon.cries.latest;
-    const audio = new Audio(cryUrl);
-    const playCry = () =>{
-        if (!audio.paused) {
-            audio.pause();
-            audio.currentTime = 0; 
-        }
-        audio.play().catch((error) => {
-            console.error("Error playing audio:", error);
-        });
-    }
+  const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
+  const audioRef = useRef(new Audio(cryUrl));
+
+  const playCry = () => {
+    const audio = audioRef.current;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch((err) => console.error("Error playing audio:", err));
+  };
 
     const typeColors = {
       normal: 'bg-[#A8A77A]',
@@ -52,7 +51,7 @@ export default function PokemonCard({pokemon}){
       <h2 className="text-xl font-bold capitalize">{pokemon.name}</h2>
       <div className="flex justify-center my-2">
         <img
-          src={pokemon.sprites.front_default}
+          src={pokemon.sprites.other.dream_world.front_default}
           alt={pokemon.name}
           className="w-24 h-24"
           style={{ imageRendering: 'pixelated' }}

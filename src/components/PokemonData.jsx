@@ -52,7 +52,7 @@ export default function PokemonData(){
     }
 
     return(
-        <section className="container mx-auto px-4 py-8">
+        <section className="container mx-auto px-4 py-8 bg-[#d4eeff]">
             <header>
                 <h1 className="text-4xl font-extrabold text-center mb-8">Gotta Catch 'em All!</h1>
             </header>
