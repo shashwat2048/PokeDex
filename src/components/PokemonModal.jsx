@@ -1,7 +1,10 @@
 import { AiOutlineClose } from 'react-icons/ai';
+import clsx from 'clsx';
 
-export default function PokemonModal({ pokemon, onClose }) {
+export default function PokemonModal({ pokemon, onClose ,typeColors}) {
   if (!pokemon) return null;
+
+  let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -44,6 +47,24 @@ export default function PokemonModal({ pokemon, onClose }) {
               ))}
             </ul>
           </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+        {pokemon.types.map((t) => {
+          const name = t.type.name;
+          const badgeClass = typeColors[name] || 'bg-[#E0E0E0]';
+          return (
+            <span
+              key={name}
+              className={clsx(
+                "px-2 py-1 rounded-full text-xs capitalize",
+                badgeClass,
+                "text-white font-medium"
+              )}
+            >
+              {name}
+            </span>
+          );
+        })}
+      </div>
         </div>
       </div>
     </div>

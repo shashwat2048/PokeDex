@@ -16,6 +16,28 @@ export default function PokemonData() {
   const [selected, setSelected] = useState(null);
   const pageSize = 12;
 
+  const typeColors = {
+    normal: 'bg-[#A8A77A]',
+    fire: 'bg-[#EE8130]',
+    water: 'bg-[#6390F0]',
+    electric: 'bg-[#F7D02C]',
+    grass: 'bg-[#7AC74C]',
+    ice: 'bg-[#96D9D6]',
+    fighting: 'bg-[#C22E28]',
+    poison: 'bg-[#A33EA1]',
+    ground: 'bg-[#E2BF65]',
+    flying: 'bg-[#A98FF3]',
+    psychic: 'bg-[#F95587]',
+    bug: 'bg-[#A6B91A]',
+    rock: 'bg-[#B6A136]',
+    ghost: 'bg-[#735797]',
+    dragon: 'bg-[#6F35FC]',
+    dark: 'bg-[#705746]',
+    steel: 'bg-[#B7B7CE]',
+    fairy: 'bg-[#D685AD]',
+    stellar: 'bg-[#FFD700]',
+    };
+    
   const fetchAllPokemons = async () => {
     try {
       const res = await fetch(API);
@@ -91,7 +113,7 @@ export default function PokemonData() {
         <div className="flex flex-row gap-3 justify-center items-center cursor-pointer">
         <img src={logoimg} alt="" />
         <h1 onClick={goHome} className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left">
-          Gotta Catch 'em All!
+        Pokédex Swift
         </h1>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto">
@@ -100,8 +122,10 @@ export default function PokemonData() {
             <input
               type="text"
               placeholder="Search Pokémon..."
+              onClick={e => e.target.placeholder = "Gotta Catch 'em All!"}
               value={search}
               onChange={e => {
+                e.target.placeholder = "Search Pokémon...";
                 setSearch(e.target.value);
                 setCurrPage(1);
               }}
@@ -138,10 +162,17 @@ export default function PokemonData() {
       {error && <h1 className="text-2xl font-bold text-center mt-10 text-red-500">Error: Something went wrong!</h1> }
       {!loading && <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {pokeData.map(pokemon => (
-          <PokemonCard key={pokemon.id} pokemon={pokemon} setSelected={setSelected}/>
+          <PokemonCard key={pokemon.id} pokemon={pokemon} setSelected={setSelected} typeColors={typeColors}/>
         ))}
       </ul>}
-      <PokemonModal pokemon={selected} onClose={closeModal} />
+      <PokemonModal pokemon={selected} onClose={closeModal} typeColors={typeColors} />
+      <footer>
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-600">
+            &copy; {new Date().getFullYear()} Pokédex Swift. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </section>
   );
 }

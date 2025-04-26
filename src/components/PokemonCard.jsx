@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useRef } from "react";
-export default function PokemonCard({pokemon, setSelected}) {
+import logoimg from "../assets/pokeball.png";
+export default function PokemonCard({pokemon, setSelected, typeColors}) {
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
   const audioRef = useRef(new Audio(cryUrl));
 
@@ -11,27 +12,7 @@ export default function PokemonCard({pokemon, setSelected}) {
     audio.play().catch((err) => console.error("Error playing audio:", err));
   };
 
-    const typeColors = {
-      normal: 'bg-[#A8A77A]',
-      fire: 'bg-[#EE8130]',
-      water: 'bg-[#6390F0]',
-      electric: 'bg-[#F7D02C]',
-      grass: 'bg-[#7AC74C]',
-      ice: 'bg-[#96D9D6]',
-      fighting: 'bg-[#C22E28]',
-      poison: 'bg-[#A33EA1]',
-      ground: 'bg-[#E2BF65]',
-      flying: 'bg-[#A98FF3]',
-      psychic: 'bg-[#F95587]',
-      bug: 'bg-[#A6B91A]',
-      rock: 'bg-[#B6A136]',
-      ghost: 'bg-[#735797]',
-      dragon: 'bg-[#6F35FC]',
-      dark: 'bg-[#705746]',
-      steel: 'bg-[#B7B7CE]',
-      fairy: 'bg-[#D685AD]',
-      stellar: 'bg-[#FFD700]',
-      };
+
       let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
     return (
       <div className={clsx(bgColor, "rounded-br-lg flex flex-col")}>
@@ -46,7 +27,8 @@ export default function PokemonCard({pokemon, setSelected}) {
         <span className="font-mono font-bold text-sm">
           #{String(pokemon.id).padStart(3, '0')}
         </span>
-        <span className="capitalize text-sm font-semibold">
+        <span className="capitalize text-sm font-semibold flex flex-row gap-2">
+          <img src={logoimg} alt="" className="h-[20px] w-[20px]"/>
           {pokemon.species.name}
         </span>
       </div>
