@@ -99,7 +99,21 @@ export default function PokemonData() {
   const handleNext = () => {
     if (currPage < totalPages) setCurrPage(prev => prev + 1);
   };
-  const closeModal = () => {setSelected(null);}
+  function closeModal(audioref) {
+    const audio = new Audio(audioref);
+    audio.volume = 0.5;
+    audio.currentTime = 0.2;
+    audio.play();
+    setSelected(null);
+  }
+
+  function openModal(pokemon, audioref) {
+    const audio = new Audio(audioref);
+    audio.volume = 0.5;
+    audio.currentTime = 0.2;
+    audio.play();
+    setSelected(pokemon);
+  }
 
   const goHome = () =>{
     setSearch("");
@@ -162,10 +176,10 @@ export default function PokemonData() {
       {error && <h1 className="text-2xl font-bold text-center mt-10 text-red-500">Error: Something went wrong!</h1> }
       {!loading && <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {pokeData.map(pokemon => (
-          <PokemonCard key={pokemon.id} pokemon={pokemon} setSelected={setSelected} typeColors={typeColors}/>
+          <PokemonCard key={pokemon.id} pokemon={pokemon} openModal={openModal} typeColors={typeColors}/>
         ))}
       </ul>}
-      <PokemonModal pokemon={selected} onClose={closeModal} typeColors={typeColors} />
+      <PokemonModal pokemon={selected} closeModal={closeModal} typeColors={typeColors} />
       <footer>
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">

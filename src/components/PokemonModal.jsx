@@ -1,9 +1,23 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import clsx from 'clsx';
+import logoimg from "../assets/pokeball.png";
+import ballclose from "../assets/pokeclose.mp3";
+import plink from "../assets/plink.mp3";
 
-export default function PokemonModal({ pokemon, onClose, typeColors }) {
+
+export default function PokemonModal({ pokemon, closeModal, typeColors}) {
   if (!pokemon) return null;
+
+  const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
+  const audioRef = useRef(new Audio(cryUrl));
+
+  const playCry = () => {
+    const audio = audioRef.current;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch((err) => console.error("Error playing audio:", err));
+  };
 
   const [shiny, setShiny] = useState(false);
   const imgUrl = shiny ? pokemon.sprites.other.showdown.front_shiny : pokemon.sprites.other.showdown.front_default;
@@ -17,12 +31,13 @@ export default function PokemonModal({ pokemon, onClose, typeColors }) {
         {/* Header */}
         <div className={clsx(headerBg, 'h-24 flex items-center justify-center relative')}>
           <button
-            onClick={onClose}
+            onClick={()=> closeModal(plink)}
             className="absolute top-3 right-3 text-white hover:text-gray-200"
             aria-label="Close"
           >
             <AiOutlineClose size={24} />
           </button>
+          <img src={logoimg} alt="" className="absolute top-3 left-3 h-8 w-8 cursor-pointer" onClick={()=>closeModal(ballclose)}/>
           <h2 className="text-2xl font-bold capitalize text-white">
             {pokemon.name}{' '}
             <span className="text-sm opacity-75">
@@ -38,8 +53,9 @@ export default function PokemonModal({ pokemon, onClose, typeColors }) {
             <img
               src={imgUrl}
               alt={pokemon.name}
-              className="w-auto h-auto"
+              className="w-auto h-auto cursor-pointer"
               style={{ imageRendering: 'pixelated' }}
+              onClick={playCry}
             />
           </div>
             {/* Types */}
