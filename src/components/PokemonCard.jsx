@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useRef } from "react";
-export default function PokemonCard({pokemon, onDoubleClick}) {
+export default function PokemonCard({pokemon, setSelected}) {
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
   const audioRef = useRef(new Audio(cryUrl));
 
@@ -37,7 +37,7 @@ export default function PokemonCard({pokemon, onDoubleClick}) {
       <div className={clsx(bgColor, "rounded-br-lg flex flex-col")}>
       <div
       onClick={playCry}
-      onDoubleClick={() => onDoubleClick(pokemon)}
+      onDoubleClick={() => setSelected(pokemon)}
       className={clsx(
         "cursor-pointer bg-white rounded-br-full rounded-tl-lg shadow-lg p-4 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
       )}
@@ -79,7 +79,7 @@ export default function PokemonCard({pokemon, onDoubleClick}) {
       </div>
       
     </div>
-    <button onClick={() => onDoubleClick(pokemon)} className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3">View details</button>
+    <button onClick={() => {setSelected(pokemon); playCry();}} className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3">View details</button>
     </div>
     )
 }

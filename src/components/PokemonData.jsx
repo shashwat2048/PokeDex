@@ -3,6 +3,7 @@ import PokemonCard from "./PokemonCard";
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { FcSearch } from "react-icons/fc";
 import PokemonModal from "./PokemonModal";
+import logoimg from "../assets/pokeball.png";
 
 export default function PokemonData() {
   const [allPokemonData, setallPokemonData] = useState([]);
@@ -87,9 +88,12 @@ export default function PokemonData() {
   return (
     <section className="container mx-auto px-2 sm:px-4 py-8">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
+        <div className="flex flex-row gap-3 justify-center items-center cursor-pointer">
+        <img src={logoimg} alt="" />
         <h1 onClick={goHome} className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left">
           Gotta Catch 'em All!
         </h1>
+        </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto">
           <div className="relative text-gray-400 focus-within:text-gray-600 flex-1 sm:flex-none">
             <FcSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" />
@@ -134,7 +138,7 @@ export default function PokemonData() {
       {error && <h1 className="text-2xl font-bold text-center mt-10 text-red-500">Error: Something went wrong!</h1> }
       {!loading && <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {pokeData.map(pokemon => (
-          <PokemonCard key={pokemon.id} pokemon={pokemon} onDoubleClick={setSelected}/>
+          <PokemonCard key={pokemon.id} pokemon={pokemon} setSelected={setSelected}/>
         ))}
       </ul>}
       <PokemonModal pokemon={selected} onClose={closeModal} />
