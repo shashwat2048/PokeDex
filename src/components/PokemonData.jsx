@@ -1,77 +1,143 @@
 import { useEffect, useState } from "react";
 import PokemonCard from "./PokemonCard";
+import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { FcSearch } from "react-icons/fc";
+import PokemonModal from "./PokemonModal";
 
-export default function PokemonData(){
-    const [pokeData, setPokeData] = useState([]);
-    const API = "https://pokeapi.co/api/v2/pokemon?limit=500";
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [search, setSearch] = useState("");
+export default function PokemonData() {
+  const [allPokemonData, setallPokemonData] = useState([]);
+  const [pokeData, setPokeData] = useState([]);
+  const API = "https://pokeapi.co/api/v2/pokemon?limit=1302&offset=0";
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
+  const [currPage, setCurrPage] = useState(1);
+  const [selected, setSelected] = useState(null);
+  const pageSize = 12;
 
-    const fetchPokemons = async () => {
-        try{
-            const resp = await fetch(API);
-            const data = await resp.json();
-            console.log(data);
-            const detailedPokeData = data.results.map(async(pokemon) => {
-                const resp = await fetch(pokemon.url);
-                const data = await resp.json();
-                console.log(data);
-                return data;
-            });
-            const resolvedPokeData = await Promise.all(detailedPokeData);
-            console.log(resolvedPokeData);
-            setPokeData(resolvedPokeData);
-        }
-        catch(err){
-            console.error(err);
-            setError(err);
-        }
-        finally{
-            setLoading(false);
-        }
+  const fetchAllPokemons = async () => {
+    try {
+      const res = await fetch(API);
+      const data = await res.json();
+      setallPokemonData(data.results);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
     }
-    useEffect(() => {
-        fetchPokemons();
-    },[])
+  };
 
-    const searchPokemon = pokeData.filter((pokemon) => {
-        return pokemon.name.toLowerCase().includes(search.toLowerCase());
-    })
-
-    if(loading){
-        return(
-            <h1 className="text-2xl font-bold text-center mt-10">Loading...</h1>
-        )
+  const fetchPokemonDetails = async () => {
+    if (allPokemonData.length === 0) return;
+    setLoading(true);
+    setError(null);
+    try {
+      let pokemonsTofetch = allPokemonData;
+      if (search) {
+        pokemonsTofetch = allPokemonData.filter(p =>
+          p.name.toLowerCase().includes(search.toLowerCase())
+        );
+      } else {
+        const offset = (currPage - 1) * pageSize;
+        pokemonsTofetch = allPokemonData.slice(offset, offset + pageSize);
+      }
+      const details = await Promise.all(
+        pokemonsTofetch.map(async p => {
+          const r = await fetch(p.url);
+          return r.json();
+        })
+      );
+      setPokeData(details);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
     }
-    if(error){
-        return(
-            <h1 className="text-2xl font-bold text-center mt-10 text-red-500">Error: Sorry some unexpected error occured!</h1>
-        )
-    }
+  };
 
-    return(
-        <section className="container mx-auto px-4 py-8 bg-[#d4eeff]">
-            <header>
-                <h1 className="text-4xl font-extrabold text-center mb-8">Gotta Catch 'em All!</h1>
-            </header>
-            <div className="mb-8 flex flex-row justify-center items-center gap-1">
-                <input type="text" placeholder="Search for a Pokémon..." className="w-full p-2 border border-gray-300 rounded-lg"
-                 value={search} onChange={(e) => setSearch(e.target.value)}
-                />
-                <FcSearch className="h-[32px] w-[32px]"/>
+  useEffect(() => {
+    fetchAllPokemons();
+  }, []);
+
+  useEffect(() => {
+    fetchPokemonDetails();
+  }, [allPokemonData, currPage, search]);
+
+  const totalpokeCard = search
+    ? allPokemonData.filter(p =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      ).length
+    : allPokemonData.length;
+  const totalPages = Math.ceil(totalpokeCard / pageSize);
+
+  const handlePrev = () => {
+    if (currPage > 1) setCurrPage(prev => prev - 1);
+  };
+  const handleNext = () => {
+    if (currPage < totalPages) setCurrPage(prev => prev + 1);
+  };
+  const closeModal = () => {setSelected(null);}
+
+  const goHome = () =>{
+    setSearch("");
+    setCurrPage(1);
+  }
+
+
+  return (
+    <section className="container mx-auto px-2 sm:px-4 py-8">
+      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
+        <h1 onClick={goHome} className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left">
+          Gotta Catch 'em All!
+        </h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto">
+          <div className="relative text-gray-400 focus-within:text-gray-600 flex-1 sm:flex-none">
+            <FcSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg" />
+            <input
+              type="text"
+              placeholder="Search Pokémon..."
+              value={search}
+              onChange={e => {
+                setSearch(e.target.value);
+                setCurrPage(1);
+              }}
+              className="w-full sm:w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+            />
+          </div>
+          {!search && (
+            <div className="flex justify-center sm:justify-start items-center space-x-2 mt-2 sm:mt-0">
+              <button
+                onClick={handlePrev}
+                disabled={currPage === 1}
+                className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm"
+                aria-label="Previous Page"
+              >
+                <AiOutlineLeft />
+              </button>
+              <span className="text-sm">
+                Page {currPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNext}
+                disabled={currPage === totalPages}
+                className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm"
+                aria-label="Next Page"
+              >
+                <AiOutlineRight />
+              </button>
             </div>
+          )}
+        </div>
+      </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {searchPokemon.map((pokemon) => (
-                    <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                ))}
-            </div>
-      </section>
-    )
-
+      {loading && <h1 className="text-2xl font-bold text-center mt-10">Loading...</h1>}
+      {error && <h1 className="text-2xl font-bold text-center mt-10 text-red-500">Error: Something went wrong!</h1> }
+      {!loading && <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {pokeData.map(pokemon => (
+          <PokemonCard key={pokemon.id} pokemon={pokemon} onDoubleClick={setSelected}/>
+        ))}
+      </ul>}
+      <PokemonModal pokemon={selected} onClose={closeModal} />
+    </section>
+  );
 }
-
-// https://pokeapi.co/api/v2/pokemon?limit=1000
-

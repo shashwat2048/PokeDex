@@ -4,7 +4,7 @@ import PokemonData from './components/PokemonData'
 function App() {
 
   return (
-    <PokemonData/>
+    <PokemonData className = "bg-[#d4eeff] min-h-screen"/>
   )
 }
 

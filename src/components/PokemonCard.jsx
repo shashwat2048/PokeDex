@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useRef } from "react";
-export default function PokemonCard({pokemon}){
+export default function PokemonCard({pokemon, onDoubleClick}) {
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
   const audioRef = useRef(new Audio(cryUrl));
 
@@ -34,10 +34,12 @@ export default function PokemonCard({pokemon}){
       };
       let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
     return (
+      <div className={clsx(bgColor, "rounded-br-lg flex flex-col")}>
       <div
       onClick={playCry}
+      onDoubleClick={() => onDoubleClick(pokemon)}
       className={clsx(
-        "cursor-pointer bg-white rounded-xl shadow-lg p-4 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+        "cursor-pointer bg-white rounded-br-full rounded-tl-lg shadow-lg p-4 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
       )}
     >
       <div className="flex justify-between items-center mb-2">
@@ -51,33 +53,11 @@ export default function PokemonCard({pokemon}){
       <h2 className="text-xl font-bold capitalize">{pokemon.name}</h2>
       <div className="flex justify-center my-2">
         <img
-          src={pokemon.sprites.other.dream_world.front_default}
+          src={pokemon.sprites.other.dream_world.front_default === null ? pokemon.sprites.front_default : pokemon.sprites.other.dream_world.front_default}
           alt={pokemon.name}
           className="w-24 h-24"
           style={{ imageRendering: 'pixelated' }}
         />
-      </div>
-      <div className="text-sm mb-2 flex justify-between">
-        <span>Height: {pokemon.height}</span>
-        <span>Weight: {pokemon.weight}</span>
-      </div>
-      <div className="mb-2">
-        <h3 className="text-sm font-semibold">Abilities:</h3>
-        <ul className="list-disc list-inside text-sm">
-          {pokemon.abilities.map((ab) => (
-            <li key={ab.ability.name}>{ab.ability.name}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="mb-2">
-        <h3 className="text-sm font-semibold">Stats:</h3>
-        <ul className="text-sm">
-          {pokemon.stats.map((stat) => (
-            <li key={stat.stat.name} className="capitalize">
-              {stat.stat.name}: {stat.base_stat}
-            </li>
-          ))}
-        </ul>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {pokemon.types.map((t) => {
@@ -97,6 +77,9 @@ export default function PokemonCard({pokemon}){
           );
         })}
       </div>
+      
+    </div>
+    <button onClick={() => onDoubleClick(pokemon)} className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3">View details</button>
     </div>
     )
 }
