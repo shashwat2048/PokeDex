@@ -1,6 +1,13 @@
 export default function PokemonCard({pokemon}){
+    const playCry = () =>{
+        const cryUrl = pokemon.cries.latest;
+        const audio = new Audio(cryUrl);
+        audio.play().catch((error) => {
+            console.error("Error playing audio:", error);
+        });
+    }
     return (
-        <div className="border-2 border-black">
+        <div onClick={playCry} className="border-2 border-black">
             <h2>{pokemon.name}</h2>
             <img src={pokemon.sprites.other.showdown.front_default} alt={pokemon.name} />
             <p>Height: {pokemon.height}</p>
