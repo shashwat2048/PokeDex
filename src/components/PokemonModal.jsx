@@ -1,70 +1,105 @@
+import { useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import clsx from 'clsx';
 
-export default function PokemonModal({ pokemon, onClose ,typeColors}) {
+export default function PokemonModal({ pokemon, onClose, typeColors }) {
   if (!pokemon) return null;
 
-  let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
+  const [shiny, setShiny] = useState(false);
+  const imgUrl = shiny ? pokemon.sprites.other.showdown.front_shiny : pokemon.sprites.other.showdown.front_default;
+
+  const headerBg = typeColors[pokemon.types[0].type.name] || 'bg-gray-300';
+  console.log(pokemon);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-        >
-          <AiOutlineClose size={24} />
-        </button>
-        <div className="flex flex-col items-center">
-          <img
-            src={pokemon.sprites.other.showdown.front_default}
-            alt={pokemon.name}
-            className="w-auto h-auto mb-4"
-            style={{ imageRendering: 'pixelated' }}
-          />
-          <h2 className="text-2xl font-bold capitalize mb-2">{pokemon.name}</h2>
-          <p className="text-sm text-gray-600 mb-4">#{String(pokemon.id).padStart(3, '0')}</p>
-          <div className="w-full mb-4">
-            <h3 className="font-semibold">Height & Weight</h3>
-            <p className="text-sm">Height: {pokemon.height}</p>
-            <p className="text-sm">Weight: {pokemon.weight}</p>
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+      <div className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className={clsx(headerBg, 'h-24 flex items-center justify-center relative')}>
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 text-white hover:text-gray-200"
+            aria-label="Close"
+          >
+            <AiOutlineClose size={24} />
+          </button>
+          <h2 className="text-2xl font-bold capitalize text-white">
+            {pokemon.name}{' '}
+            <span className="text-sm opacity-75">
+              #{String(pokemon.id).padStart(3, '0')}
+            </span>
+          </h2>
+        </div>
+
+        {/* Body */}
+        <div className="bg-white p-6 grid grid-cols-1 gap-6">
+          {/* Artwork & shiny toggle */}
+          <div className="flex justify-center">
+            <img
+              src={imgUrl}
+              alt={pokemon.name}
+              className="w-auto h-auto"
+              style={{ imageRendering: 'pixelated' }}
+            />
           </div>
-          <div className="w-full mb-4">
-            <h3 className="font-semibold">Abilities</h3>
-            <ul className="list-disc list-inside text-sm">
-              {pokemon.abilities.map(ab => (
-                <li key={ab.ability.name}>{ab.ability.name}</li>
+            {/* Types */}
+          <div className="flex flex-wrap gap-2 items-center justify-center">
+              {pokemon.types.map(t => (
+                <span
+                  key={t.type.name}
+                  className={clsx(
+                    'px-3 py-1 rounded-full text-xs capitalize text-white',
+                    typeColors[t.type.name]
+                  )}
+                >
+                  {t.type.name}
+                </span>
               ))}
-            </ul>
+            </div>
+            <div className="flex items-center justify-center space-x-4">
+            <span className="text-sm font-semibold">Change Form:</span>
+            <button
+              onClick={() => setShiny(prev => !prev)}
+              className="px-4 py-1 bg-gray-200 rounded-full text-sm"
+            >
+              {shiny ? 'Normal' : 'Shiny'}
+            </button>
           </div>
-          <div className="w-full mb-4">
-            <h3 className="font-semibold">Stats</h3>
-            <ul className="text-sm">
+          {/* Height & Weight */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h3 className="font-bold">Height:</h3>
+              <p className="mt-1 text-sm">{pokemon.height}</p>
+            </div>
+            <div>
+              <h3 className="font-bold">Weight:</h3>
+              <p className="mt-1 text-sm">{pokemon.weight}</p>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div>
+            <h3 className="font-bold mb-2">Stats:</h3>
+            <ul className="grid grid-cols-2 gap-2 text-sm">
               {pokemon.stats.map(st => (
                 <li key={st.stat.name} className="capitalize">
-                  {st.stat.name}: {st.base_stat}
+                  <span className="font-semibold">{st.stat.name}</span>: {st.base_stat}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-        {pokemon.types.map((t) => {
-          const name = t.type.name;
-          const badgeClass = typeColors[name] || 'bg-[#E0E0E0]';
-          return (
-            <span
-              key={name}
-              className={clsx(
-                "px-2 py-1 rounded-full text-xs capitalize",
-                badgeClass,
-                "text-white font-medium"
-              )}
-            >
-              {name}
-            </span>
-          );
-        })}
-      </div>
+
+          {/* Moves */}
+          <div>
+            <h3 className="font-bold mb-2">Moves:</h3>
+            <ul className="grid grid-cols-2 gap-2 text-sm h-40 overflow-y-auto">
+              {pokemon.moves.slice(0, 12).map(m => (
+                <li key={m.move.name} className="capitalize">
+                  {m.move.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
