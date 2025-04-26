@@ -1,7 +1,11 @@
 export default function PokemonCard({pokemon}){
+    const cryUrl = pokemon.cries.latest;
+    const audio = new Audio(cryUrl);
     const playCry = () =>{
-        const cryUrl = pokemon.cries.latest;
-        const audio = new Audio(cryUrl);
+        if (!audio.paused) {
+            audio.pause();
+            audio.currentTime = 0; 
+        }
         audio.play().catch((error) => {
             console.error("Error playing audio:", error);
         });
