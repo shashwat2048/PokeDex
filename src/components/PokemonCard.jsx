@@ -12,6 +12,7 @@ export default function PokemonCard({pokemon, openModal, typeColors}) {
     const audio = audioRef.current;
     audio.pause();
     audio.currentTime = 0;
+    audio.volume = 0.5; 
     audio.play().catch((err) => console.error("Error playing audio:", err));
   };
 
