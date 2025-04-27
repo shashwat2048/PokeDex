@@ -131,11 +131,11 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="font-bold">Height</h3>
-              <p className="mt-1 text-sm">{pokemon.height}</p>
+              <p className="mt-1 text-sm">{pokemon.height / 10} m</p>
             </div>
             <div>
               <h3 className="font-bold">Weight</h3>
-              <p className="mt-1 text-sm">{pokemon.weight}</p>
+              <p className="mt-1 text-sm">{pokemon.weight / 10} Kg</p>
             </div>
           </div>
 
