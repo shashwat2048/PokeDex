@@ -9,6 +9,8 @@ import plink from "../assets/plink.mp3";
 export default function PokemonModal({ pokemon, closeModal, typeColors}) {
   if (!pokemon) return null;
 
+  const viewportHeight = window.innerHeight;
+  
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
   const audioRef = useRef(new Audio(cryUrl));
 
@@ -47,10 +49,10 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
   
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 scroll-m-1">
-      <div className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 scroll-m-1 landscape:items-start landscape:overflow-y-auto">
+      <div className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl  max-h-[calc(100vh-4rem)] overflow-y-auto">
         {/* Header */}
-        <div className={clsx(headerBg, 'h-auto p-6 flex items-center justify-center relative')}>
+        <div className={clsx(headerBg, 'sticky top-0 z-10 h-auto p-6 flex items-center justify-center')}>
           <button
             onClick={()=> closeModal(plink)}
             className="absolute top-3 right-3 text-white hover:text-gray-200"
@@ -70,7 +72,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
         {/* Body */}
         <div className="bg-white p-6 grid grid-cols-1 gap-6">
           {/* Artwork & shiny toggle */}
-          <div className="flex justify-center">
+          <div className="flex justify-center overflow-y-auto">
             <img
               src={imgUrl}
               alt={pokemon.name}
@@ -138,7 +140,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
           <div>
             <h3 className="font-bold mb-2">Moves:</h3>
             <ul className="grid grid-cols-2 gap-1 text-sm h-auto overflow-y-auto">
-              {pokemon.moves.slice(0, 4).map(m => (
+              {pokemon.moves.slice(0, 12).map(m => (
                 <li key={m.move.name} className="capitalize">
                   {m.move.name}
                 </li>
