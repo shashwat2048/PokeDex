@@ -26,7 +26,7 @@ export default function PokemonCard({pokemon, openModal, typeColors}) {
     return pokemon.sprites.front_default;
   };
   let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
-  
+
     return (
       <div className={clsx(bgColor, "rounded-br-lg rounded-tl-lg flex flex-col overflow-hidden")}>
       <div
@@ -39,7 +39,7 @@ export default function PokemonCard({pokemon, openModal, typeColors}) {
           #{String(pokemon.id).padStart(3, '0')}
         </span>
         <span className="capitalize text-sm font-semibold flex flex-row gap-2 cursor-pointer" onClick={()=>openModal(pokemon, ballopen)}>
-          <img src={logoimg} alt="" className="h-[20px] w-[20px]"/>
+          <img src={logoimg} alt="" className="h-[20px] w-[20px] transform transition duration-300 hover:scale-105"/>
           {pokemon.species.name}
         </span>
       </div>
@@ -48,7 +48,7 @@ export default function PokemonCard({pokemon, openModal, typeColors}) {
         <img
           src={ pokemonImg(pokemon)}
           alt={pokemon.name}
-          className="w-24 h-24 cursor-pointer"
+          className="w-24 h-24 cursor-pointer transform transition duration-300 hover:scale-105"
           style={{ imageRendering: 'pixelated' }}
           onClick={playCry}
         />
@@ -73,7 +73,7 @@ export default function PokemonCard({pokemon, openModal, typeColors}) {
       </div>
       
     </div>
-    <button onClick={() => openModal(pokemon, plink)} className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3 ">View details</button>
+    <button onClick={() => openModal(pokemon, plink)} className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3 transform transition duration-300 hover:bg-[#ffffffcd]">View details</button>
     </div>
     )
 }

@@ -60,7 +60,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
           >
             <AiOutlineClose size={24} />
           </button>
-          <img src={logoimg} alt="" className="absolute top-3 left-3 h-8 w-8 cursor-pointer" onClick={()=>closeModal(ballclose)}/>
+          <img src={logoimg} alt="" className="absolute top-3 left-3 h-8 w-8 cursor-pointer transform transition duration-300 hover:scale-105" onClick={()=>closeModal(ballclose)}/>
           <h2 className="text-2xl font-bold capitalize text-white">
             {pokemon.name}{' '}
             <span className="text-sm opacity-75">
@@ -76,7 +76,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
             <img
               src={imgUrl}
               alt={pokemon.name}
-              className="w-auto h-auto cursor-pointer"
+              className="w-auto h-auto cursor-pointer transform transition duration-300 hover:scale-105"
               style={{ imageRendering: 'pixelated' }}
               onClick={playCry}
             />
