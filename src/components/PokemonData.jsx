@@ -149,7 +149,7 @@ export default function PokemonData() {
         Pokédex Swift
         </h1>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto gap-2">
             <button onClick={handleBgMusic}>
                 {isBgPlaying ? <MdMusicNote /> : <MdMusicOff />}
             </button>
@@ -174,7 +174,6 @@ export default function PokemonData() {
                 onClick={handlePrev}
                 disabled={currPage === 1}
                 className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm"
-                aria-label="Previous Page"
               >
                 <AiOutlineLeft />
               </button>
@@ -185,7 +184,6 @@ export default function PokemonData() {
                 onClick={handleNext}
                 disabled={currPage === totalPages}
                 className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm"
-                aria-label="Next Page"
               >
                 <AiOutlineRight />
               </button>

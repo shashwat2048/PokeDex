@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import clsx from 'clsx';
 import logoimg from "../assets/pokeball.png";
@@ -26,11 +26,31 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
   const headerBg = typeColors[pokemon.types[0].type.name] || 'bg-gray-300';
   console.log(pokemon);
 
+  async function pokeAbout(){
+    try{
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}/`);
+      const data = await res.json();
+      const flavorText = data.flavor_text_entries[0].flavor_text;
+      const text = flavorText.replace(/(\r\n|\n|\r)/gm, " ");
+      return text;
+    }
+    catch (error) {
+      console.error("Error fetching Pokemon species data:", error);
+      return null;
+    }
+  }
+  const [aboutText, setAboutText] = useState("Loading...");
+  useEffect(() => {
+    setAboutText(pokeAbout())
+  },[]);
+
+  
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 scroll-m-1">
       <div className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className={clsx(headerBg, 'h-24 flex items-center justify-center relative')}>
+        <div className={clsx(headerBg, 'h-auto p-6 flex items-center justify-center relative')}>
           <button
             onClick={()=> closeModal(plink)}
             className="absolute top-3 right-3 text-white hover:text-gray-200"
@@ -73,6 +93,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
                 </span>
               ))}
             </div>
+            {/* Shiny toggle */}
             <div className="flex items-center justify-center space-x-4">
             <span className="text-sm font-semibold">Change Form:</span>
             <button
@@ -81,6 +102,13 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
             >
               {shiny ? 'Normal' : 'Shiny'}
             </button>
+          </div>
+          {/* about description */}
+          <div>
+            <h3 className="font-bold mb-2">About: <span className="text-sm font-normal">
+            {aboutText}
+              </span></h3>
+            
           </div>
           {/* Height & Weight */}
           <div className="grid grid-cols-2 gap-4">
@@ -109,8 +137,8 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
           {/* Moves */}
           <div>
             <h3 className="font-bold mb-2">Moves:</h3>
-            <ul className="grid grid-cols-2 gap-2 text-sm h-40 overflow-y-auto">
-              {pokemon.moves.slice(0, 12).map(m => (
+            <ul className="grid grid-cols-2 gap-1 text-sm h-auto overflow-y-auto">
+              {pokemon.moves.slice(0, 4).map(m => (
                 <li key={m.move.name} className="capitalize">
                   {m.move.name}
                 </li>
