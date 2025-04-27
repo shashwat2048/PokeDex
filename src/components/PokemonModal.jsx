@@ -49,7 +49,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors}) {
   
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 scroll-m-1 landscape:items-start landscape:overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 landscape:items-start landscape:overflow-y-auto">
       <div className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl  max-h-[calc(100vh-4rem)] overflow-y-auto">
         {/* Header */}
         <div className={clsx(headerBg, 'sticky top-0 z-10 h-auto p-6 flex items-center justify-center')}>
