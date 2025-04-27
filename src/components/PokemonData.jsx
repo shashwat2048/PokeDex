@@ -144,7 +144,7 @@ export default function PokemonData() {
 
   return (
     <section className="container mx-auto px-2 sm:px-4 py-8">
-      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0 sticky top-0 p-2 z-20 bg-[#d4eeff]">
+      <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0 sticky top-0 p-2 z-20 bg-[#d4eeff]">
         <div onClick={goHome} className="flex flex-row gap-3 justify-center items-center cursor-pointer">
         <img src={logoimg} alt="" />
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left">
@@ -152,7 +152,7 @@ export default function PokemonData() {
         </h1>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto gap-2">
-            <button onClick={handleBgMusic}>
+            <button onClick={handleBgMusic} className="self-center sm:m-1">
                 {isBgPlaying ? <MdMusicNote /> : <MdMusicOff />}
             </button>
           <div className="relative text-gray-400 focus-within:text-gray-600 flex-1 sm:flex-none">
