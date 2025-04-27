@@ -7,6 +7,7 @@ import logoimg from "../assets/pokeball.png";
 import { MdMusicNote, MdMusicOff} from "react-icons/md";
 import bgMusic from "../assets/bgMusic.mp3";
 import LoaderCard from "./LoaderCard";
+import { data } from "autoprefixer";
 
 
 export default function PokemonData() {

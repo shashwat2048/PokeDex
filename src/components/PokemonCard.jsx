@@ -3,6 +3,7 @@ import { useRef } from "react";
 import logoimg from "../assets/pokeball.png";
 import ballopen from "../assets/show.mp3";
 import plink from "../assets/plink.mp3";
+import openball from '../assets/openball.png';
 export default function PokemonCard({pokemon, openModal, typeColors}) {
 
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
@@ -23,7 +24,7 @@ export default function PokemonCard({pokemon, openModal, typeColors}) {
     const official = pokemon.sprites.other?.['official-artwork']?.front_default;
     if (official) return official;
 
-    return pokemon.sprites.front_default;
+    return pokemon.sprites.front_default || openball;
   };
   let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
 
