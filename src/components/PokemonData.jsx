@@ -6,6 +6,7 @@ import PokemonModal from "./PokemonModal";
 import logoimg from "../assets/pokeball.png";
 import { MdMusicNote, MdMusicOff} from "react-icons/md";
 import bgMusic from "../assets/bgMusic.mp3";
+import LoaderCard from "./LoaderCard";
 
 
 export default function PokemonData() {
@@ -75,7 +76,9 @@ export default function PokemonData() {
           return r.json();
         })
       );
-      setPokeData(details);
+      if(details.length > 0){
+        setPokeData(details);
+      } 
     } catch (err) {
       setError(err);
     } finally {
@@ -138,8 +141,6 @@ export default function PokemonData() {
     }
 }
 
-
-
   return (
     <section className="container mx-auto px-2 sm:px-4 py-8">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0 sticky top-0 p-2 z-20 bg-[#d4eeff]">
@@ -165,7 +166,7 @@ export default function PokemonData() {
                 setSearch(e.target.value);
                 setCurrPage(1);
               }}
-              className="w-full sm:w-64 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+              className="w-full sm:w-64 pl-10 pr-4 py-2 border focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm rounded-tl-lg rounded-br-lg"
             />
           </div>
           {!search && (
@@ -173,7 +174,7 @@ export default function PokemonData() {
               <button
                 onClick={handlePrev}
                 disabled={currPage === 1}
-                className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm"
+                className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm rounded-tl-lg rounded-br-lg"
               >
                 <AiOutlineLeft />
               </button>
@@ -183,7 +184,7 @@ export default function PokemonData() {
               <button
                 onClick={handleNext}
                 disabled={currPage === totalPages}
-                className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm"
+                className="flex items-center justify-center px-2 py-1 bg-gray-200 rounded disabled:opacity-50 text-sm rounded-bl-lg rounded-tr-lg"
               >
                 <AiOutlineRight />
               </button>
@@ -192,13 +193,25 @@ export default function PokemonData() {
         </div>
       </header>
 
-      {loading && <h1 className="text-2xl font-bold text-center mt-10">Loading...</h1>}
-      {error && <h1 className="text-2xl font-bold text-center mt-10 text-red-500">Error: Something went wrong!</h1> }
-      {!loading && <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {pokeData.map(pokemon => (
-          <PokemonCard key={pokemon.id} pokemon={pokemon} openModal={openModal} typeColors={typeColors}/>
-        ))}
-      </ul>}
+      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {
+          loading 
+          && 
+          Array(pageSize).fill(0).map((idx)=>{
+          return(
+          <LoaderCard key={idx}/>
+          )
+          })
+        }
+
+        {
+          pokeData.map(pokemon => (
+            <PokemonCard key={pokemon.id} pokemon={pokemon} openModal={openModal} typeColors={typeColors}/>
+          ))
+        }
+      
+
+      </ul>
       <PokemonModal pokemon={selected} closeModal={closeModal} typeColors={typeColors} />
       <footer>
         <div className="mt-8 text-center">
