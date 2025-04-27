@@ -143,9 +143,9 @@ export default function PokemonData() {
   return (
     <section className="container mx-auto px-2 sm:px-4 py-8">
       <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0 sticky top-0 p-2 z-20 bg-[#d4eeff]">
-        <div className="flex flex-row gap-3 justify-center items-center cursor-pointer">
+        <div onClick={goHome} className="flex flex-row gap-3 justify-center items-center cursor-pointer">
         <img src={logoimg} alt="" />
-        <h1 onClick={goHome} className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left">
         Pokédex Swift
         </h1>
         </div>
