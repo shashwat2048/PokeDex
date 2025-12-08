@@ -1,8 +1,63 @@
 {
-  "name": "pokedex",
-  "private": true,
-  "version": "0.0.0",
+  "name": "pokedex-swift",
+  "private": false,
+  "version": "2.0.0",
   "type": "module",
+  "displayName": "Pokédex Swift by Shashwat Shinghal",
+  "description": "Pokédex Swift - Interactive Pokemon encyclopedia created by Shashwat Shinghal. Explore 1300+ Pokemon with stunning 3D tilt animations, visual stats, type filters, favorites system, and dark mode. Built with React, Tailwind CSS, and PokeAPI. Features include search, pagination, responsive design, and accessibility support.",
+  "keywords": [
+    "pokemon",
+    "pokedex",
+    "pokedex-swift",
+    "pokemon-database",
+    "shashwat-shinghal",
+    "shashwat shinghal",
+    "interactive-pokedex",
+    "pokemon-app",
+    "pokemon-encyclopedia",
+    "pokemon-stats",
+    "pokemon-moves",
+    "pokemon-types",
+    "3d-animations",
+    "react-pokemon",
+    "react",
+    "tailwind-css",
+    "vite",
+    "pokeapi",
+    "pokemon-search",
+    "pokemon-favorites",
+    "dark-mode",
+    "responsive-design",
+    "web-app",
+    "portfolio-project",
+    "frontend-development"
+  ],
+  "author": {
+    "name": "Shashwat Shinghal",
+    "url": "https://poke-dex-eight-ruby.vercel.app/",
+    "email": ""
+  },
+  "contributors": [
+    {
+      "name": "Shashwat Shinghal",
+      "url": "https://poke-dex-eight-ruby.vercel.app/"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "Shashwat Shinghal",
+      "url": "https://poke-dex-eight-ruby.vercel.app/"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shashwatshinghal/pokedex-swift"
+  },
+  "bugs": {
+    "url": "https://github.com/shashwatshinghal/pokedex-swift/issues"
+  },
+  "homepage": "https://poke-dex-eight-ruby.vercel.app/",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
