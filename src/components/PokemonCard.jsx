@@ -59,7 +59,7 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
       >
       <article
       className={clsx(
-        "bg-white dark:bg-gray-800 rounded-br-full shadow-lg p-4 transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+        "bg-white dark:bg-gray-800 rounded-br-full shadow-lg p-4 transform transition duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
       )}
       aria-label={`${pokemon.name}, number ${pokemon.id}, ${pokemon.types.map(t => t.type.name).join(' and ')} type Pokémon`}
     >
@@ -144,7 +144,7 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
     </article>
     <button 
       onClick={() => openModal(pokemon, plink)} 
-      className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3 transform transition duration-300 hover:bg-[#ffffffcd] focus:outline-none focus:ring-2 focus:ring-blue-400"
+      className="px-2 py-1 rounded-br-lg rounded-tl-lg text-xs capitalize font-semibold bg-[#ffffff8d] m-3 transform transition duration-300 hover:bg-[#ffffffcd] focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
       aria-label={`View detailed information about ${pokemon.name}`}
     >
       View details

@@ -6,6 +6,7 @@ import PokemonModal from "./PokemonModal";
 import logoimg from "../assets/pokeball.png";
 import pikaDancing from "../assets/pika.gif";
 import pikaStatic from "../assets/pika2.gif";
+import pikaSound from "../assets/pika_sound.mp3";
 import { MdMusicNote, MdMusicOff, MdLightMode, MdDarkMode, MdFavorite, MdFavoriteBorder, MdHome, MdFileDownload } from "react-icons/md";
 import bgMusic from "../assets/bgMusic.mp3";
 import themeMusic from "../assets/theme_poke.mp3";
@@ -234,6 +235,13 @@ export default function PokemonData() {
     setTimeout(() => setShowToast(false), 2000);
   }
 
+  const playPikaSound = () => {
+    const audio = new Audio(pikaSound);
+    audio.volume = 0.5;
+    audio.currentTime = 0;
+    audio.play().catch((err) => console.error("Error playing Pikachu sound:", err));
+  }
+
   const toggleFavorite = (pokemonId, event) => {
     // Prevent any default behavior and stop propagation
     if (event) {
@@ -399,8 +407,14 @@ export default function PokemonData() {
           <img 
             src={isBgPlaying || isThemePlaying ? pikaDancing : pikaStatic}
             alt={isBgPlaying || isThemePlaying ? "Pikachu dancing - Music playing!" : "Pikachu resting"}
-            className="w-16 h-16 object-contain"
+            className="w-16 h-16 object-contain cursor-pointer hover:scale-110 transition-transform duration-200"
             style={{ imageRendering: 'pixelated' }}
+            onClick={playPikaSound}
+            title="Click to hear Pikachu!"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') playPikaSound(); }}
+            aria-label="Click to hear Pikachu's sound"
           />
           
         </div>
