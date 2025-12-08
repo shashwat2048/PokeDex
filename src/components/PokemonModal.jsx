@@ -31,8 +31,8 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
   // Tabs
   const [activeTab, setActiveTab] = useState('about');
 
-  // 3D Tilt effect for image
-  const [imageTilt, setImageTilt] = useState({ rotateX: 0, rotateY: 0 });
+  // 3D Tilt effect for image - default pose
+  const [isImageHovered, setIsImageHovered] = useState(false);
 
  
   const getSprite = (source) => {
@@ -135,24 +135,13 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
     setTimeout(() => setShowShareToast(false), 2000);
   };
 
-  // 3D Tilt handlers for image
-  const handleImageMouseMove = (e) => {
-    const img = e.currentTarget;
-    const rect = img.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateX = (y - centerY) / 10;
-    const rotateY = (centerX - x) / 10;
-    
-    setImageTilt({ rotateX, rotateY });
+  // Simple hover handler for scaling
+  const handleImageMouseEnter = () => {
+    setIsImageHovered(true);
   };
 
   const handleImageMouseLeave = () => {
-    setImageTilt({ rotateX: 0, rotateY: 0 });
+    setIsImageHovered(false);
   };
 
   // Modal JSX
@@ -165,7 +154,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
       onClick={(e) => { if (e.target === e.currentTarget) closeModal(plink); }}
     >
       <div 
-        className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto bg-white dark:bg-gray-800"
+        className="w-full max-w-lg rounded-xl overflow-hidden shadow-2xl hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] transition-shadow duration-300 max-h-[calc(100vh-4rem)] overflow-y-auto bg-white dark:bg-gray-800"
         role="document"
       >
         {/* Header */}
@@ -188,7 +177,7 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
               src={logoimg}
               alt=""
               aria-hidden="true"
-            />
+          />
           </button>
           <h2 
             id="modal-title"
@@ -215,14 +204,15 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
           <div className="flex justify-center" style={{ perspective: '1000px' }}>
             <button
               onClick={playCry}
-              onMouseMove={handleImageMouseMove}
+              onMouseEnter={handleImageMouseEnter}
               onMouseLeave={handleImageMouseLeave}
               className="focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
               aria-label={`Play ${pokemon.name}'s cry sound`}
               title={`Click to hear ${pokemon.name}'s cry`}
               style={{
-                transform: `perspective(1000px) rotateX(${imageTilt.rotateX}deg) rotateY(${imageTilt.rotateY}deg) scale(${imageTilt.rotateX || imageTilt.rotateY ? 1.1 : 1})`,
-                transition: 'transform 0.1s ease-out'
+                transform: `perspective(800px) rotateX(-5deg) rotateY(8deg) scale(${isImageHovered ? 1.3 : 1.1})`,
+                transition: 'transform 0.3s ease-out',
+                filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))'
               }}
             >
               <img
@@ -317,16 +307,16 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
 
                 <section aria-labelledby="physical-heading">
                   <h3 id="physical-heading" className="font-bold mb-3 text-gray-900 dark:text-white">Physical Characteristics</h3>
-                  <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                       <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Height</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{pokemon.height / 10} m</p>
-                    </div>
+            </div>
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                       <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Weight</p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{pokemon.weight / 10} kg</p>
-                    </div>
-                  </div>
+            </div>
+          </div>
                 </section>
               </div>
             )}
@@ -368,8 +358,8 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
                         </div>
                       );
                     })}
-                  </div>
-                  
+          </div>
+
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-gray-900 dark:text-white">Total</span>
@@ -397,9 +387,9 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
                           className="capitalize text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 px-3 py-2 rounded border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
                         >
                           {m.move.name.replace('-', ' ')}
-                        </li>
-                      ))}
-                    </ul>
+                </li>
+              ))}
+            </ul>
                     {pokemon.moves.length > 20 && (
                       <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-3">
                         + {pokemon.moves.length - 20} more moves

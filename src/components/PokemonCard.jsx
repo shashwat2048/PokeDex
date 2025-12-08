@@ -31,7 +31,7 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
   };
   let bgColor = typeColors[pokemon.types[0].type.name] || '#E0E0E0';
 
-  // 3D Tilt effect handlers for image only
+  // 3D Tilt effect handlers - more prominent
   const handleImageMouseMove = (e) => {
     const img = e.currentTarget;
     const rect = img.getBoundingClientRect();
@@ -41,8 +41,9 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    const rotateX = (y - centerY) / 10;
-    const rotateY = (centerX - x) / 10;
+    // More prominent tilt - reduced divisor from 10 to 6
+    const rotateX = (y - centerY) / 6;
+    const rotateY = (centerX - x) / 6;
     
     setTilt({ rotateX, rotateY });
   };
@@ -97,7 +98,7 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
         </button>
       </div>
       <h2 className="text-xl font-bold capitalize h-10 text-gray-900 dark:text-white">{pokemon.name}</h2>
-      <div className="flex justify-center my-2" style={{ perspective: '1000px' }}>
+      <div className="flex justify-center my-2" style={{ perspective: '800px' }}>
         <button
           onClick={playCry}
           onMouseMove={handleImageMouseMove}
@@ -106,8 +107,9 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
           aria-label={`Play ${pokemon.name}'s cry sound`}
           title={`Click to hear ${pokemon.name}'s cry`}
           style={{
-            transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${tilt.rotateX || tilt.rotateY ? 1.1 : 1})`,
-            transition: 'transform 0.1s ease-out'
+            transform: `perspective(800px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${tilt.rotateX || tilt.rotateY ? 1.15 : 1})`,
+            transition: 'transform 0.1s ease-out',
+            filter: tilt.rotateX || tilt.rotateY ? 'drop-shadow(0 10px 15px rgba(0,0,0,0.3))' : 'none'
           }}
         >
           <img

@@ -37,4 +37,18 @@
       transform: translateY(0);
     }
   }
+
+  /* Pokeball spin animation for music playing */
+  .animate-spin-slow {
+    animation: spinSlow 3s linear infinite;
+  }
+
+  @keyframes spinSlow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }

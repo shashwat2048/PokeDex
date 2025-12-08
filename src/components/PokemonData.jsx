@@ -6,6 +6,7 @@ import PokemonModal from "./PokemonModal";
 import logoimg from "../assets/pokeball.png";
 import { MdMusicNote, MdMusicOff, MdLightMode, MdDarkMode, MdFavorite, MdFavoriteBorder, MdHome, MdFileDownload } from "react-icons/md";
 import bgMusic from "../assets/bgMusic.mp3";
+import themeMusic from "../assets/theme_poke.mp3";
 import LoaderCard from "./LoaderCard";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
@@ -20,13 +21,17 @@ export default function PokemonData() {
   const [currPage, setCurrPage] = useState(1);
   const [selected, setSelected] = useState(null);
   const pageSize = 12;
-  const [music] = useState(new Audio(bgMusic));
+  const [bgMusicAudio] = useState(new Audio(bgMusic));
+  const [themeMusicAudio] = useState(new Audio(themeMusic));
   const [isBgPlaying, setIsBgPlaying] = useLocalStorage('pokedex-music-playing', false);
+  const [isThemePlaying, setIsThemePlaying] = useLocalStorage('pokedex-theme-playing', false);
   const [isDarkTheme, setIsDarkTheme] = useLocalStorage('pokedex-dark-theme', false);
   const [favorites, setFavorites] = useLocalStorage('pokedex-favorites', []);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [hoveredIcon, setHoveredIcon] = useState(null);
+  const [logoTilt, setLogoTilt] = useState({ rotateX: 0, rotateY: 0 });
 
   const typeColors = {
     normal: 'bg-[#A8A77A]',
@@ -156,6 +161,26 @@ export default function PokemonData() {
     setCurrPage(1);
     setShowFavoritesOnly(false);
   }
+  
+  // 3D Tilt effect handlers for logo
+  const handleLogoMouseMove = (e) => {
+    const logo = e.currentTarget;
+    const rect = logo.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = (y - centerY) / 6;
+    const rotateY = (centerX - x) / 6;
+    
+    setLogoTilt({ rotateX, rotateY });
+  };
+
+  const handleLogoMouseLeave = () => {
+    setLogoTilt({ rotateX: 0, rotateY: 0 });
+  };
 
   const toggleFavoritesView = () => {
     setShowFavoritesOnly(!showFavoritesOnly);
@@ -165,14 +190,27 @@ export default function PokemonData() {
 
 
   const handleBgMusic = () => {
-    music.loop = true;
-    music.volume = 0.1;
+    bgMusicAudio.loop = true;
+    bgMusicAudio.volume = 0.1;
     if (isBgPlaying) {
-        music.pause();
+        bgMusicAudio.pause();
         setIsBgPlaying(false);
     } else {
-        music.play().catch((err) => console.error("Error playing audio:", err));
+        bgMusicAudio.play().catch((err) => console.error("Error playing bg audio:", err));
         setIsBgPlaying(true);
+    }
+    showPreferenceSavedToast();
+  }
+
+  const handleThemeMusic = () => {
+    themeMusicAudio.loop = true;
+    themeMusicAudio.volume = 0.1;
+    if (isThemePlaying) {
+        themeMusicAudio.pause();
+        setIsThemePlaying(false);
+    } else {
+        themeMusicAudio.play().catch((err) => console.error("Error playing theme audio:", err));
+        setIsThemePlaying(true);
     }
     showPreferenceSavedToast();
   }
@@ -278,73 +316,123 @@ export default function PokemonData() {
 
   // Handle music state on mount - note: browsers block autoplay
   useEffect(() => {
-    music.loop = true;
-    music.volume = 0.1;
+    bgMusicAudio.loop = true;
+    bgMusicAudio.volume = 0.1;
+    themeMusicAudio.loop = true;
+    themeMusicAudio.volume = 0.1;
     
     // Note: Browsers block autoplay, so we only try if user previously enabled it
     // User will need to click the button once after page load due to browser restrictions
     if (isBgPlaying) {
-      // Attempt to play, but it will likely be blocked until user interaction
-      const playPromise = music.play();
+      const playPromise = bgMusicAudio.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Autoplay was prevented, reset state
           setIsBgPlaying(false);
+        });
+      }
+    }
+    
+    if (isThemePlaying) {
+      const playPromise = themeMusicAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          setIsThemePlaying(false);
         });
       }
     }
     
     // Cleanup
     return () => {
-      music.pause();
+      bgMusicAudio.pause();
+      themeMusicAudio.pause();
     };
   }, []);
 
   return (
-    <section 
-      className="container mx-auto px-2 sm:px-4 py-8 min-h-screen transition-colors duration-300 flex flex-col"
-      aria-label="Pokédex application"
-    >
+    <div className="min-h-screen flex flex-col">
       <header 
-        className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 space-y-4 md:space-y-0 sticky top-0 p-2 z-20 bg-[#d4eeff] dark:bg-[#1e293b] transition-colors duration-300 shadow-sm"
+        className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0 sticky top-0 p-4 z-20 bg-white/30 dark:bg-gray-900/30 backdrop-blur-2xl border-b border-white/20 dark:border-gray-700/30 shadow-xl shadow-black/5 transition-all duration-300 px-4 sm:px-6 lg:px-8 mb-6"
         role="banner"
       >
-        <div 
-          onClick={goHome} 
-          className="flex flex-row gap-3 items-center cursor-pointer"
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') goHome(); }}
-          aria-label="Go to home page - reset search and pagination"
-        >
-          <img src={logoimg} alt="Pokéball logo" className="w-12 h-12" />
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left text-gray-900 dark:text-white">
+        <div className="flex flex-row gap-3 items-center">
+          <div 
+            style={{ perspective: '800px' }} 
+            className="inline-block"
+          >
+            <img 
+              src={logoimg} 
+              alt={isThemePlaying ? "Pokéball logo - Theme music playing (click to pause)" : "Pokéball logo - Theme music paused (click to play)"} 
+              className={`w-12 h-12 cursor-pointer ${isThemePlaying ? 'animate-spin-slow' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleThemeMusic();
+              }}
+              onMouseMove={handleLogoMouseMove}
+              onMouseLeave={handleLogoMouseLeave}
+              style={{
+                transform: `perspective(800px) rotateX(${logoTilt.rotateX}deg) rotateY(${logoTilt.rotateY}deg) scale(${logoTilt.rotateX || logoTilt.rotateY ? 1.15 : 1})`,
+                transition: 'transform 0.1s ease-out',
+                filter: logoTilt.rotateX || logoTilt.rotateY ? 'drop-shadow(0 10px 15px rgba(0,0,0,0.3))' : 'none',
+                pointerEvents: 'auto'
+              }}
+              title={isThemePlaying ? "Theme music playing - Click to pause" : "Theme music paused - Click to play"}
+              role="button"
+              tabIndex={0}
+              aria-label={isThemePlaying ? "Pause theme music" : "Play theme music"}
+            />
+          </div>
+          <div
+            onClick={goHome}
+            className="cursor-pointer"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') goHome(); }}
+            aria-label="Go to home page - reset search and pagination"
+          >
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left text-gray-900 dark:text-white">
         Pokédex Swift
         </h1>
+          </div>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto gap-2">
-            <div className="flex items-center gap-2 self-center" role="group" aria-label="Settings controls">
+            <div className="flex items-end gap-3 self-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-2xl" role="group" aria-label="Settings controls">
                 <button 
                     onClick={goHome}
-                    className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                    onMouseEnter={() => setHoveredIcon(0)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                    className="p-2 rounded-xl transition-all duration-300 ease-out"
+                    style={{
+                      transform: hoveredIcon === 0 ? 'scale(1.15) translateY(-3px)' : 
+                                 hoveredIcon === 1 ? 'scale(1.02) translateY(-2px)' : 
+                                 'scale(1)',
+                      transformOrigin: 'bottom'
+                    }}
                     aria-label="Go to home page"
                     title="Home"
                 >
-                    <MdHome className="text-xl text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                    <MdHome className="text-2xl text-gray-700 dark:text-gray-300" aria-hidden="true" />
                 </button>
                 <button 
                     onClick={toggleFavoritesView}
-                    className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 relative"
+                    onMouseEnter={() => setHoveredIcon(1)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                    className="p-2 rounded-xl transition-all duration-300 ease-out relative"
+                    style={{
+                      transform: hoveredIcon === 1 ? 'scale(1.15) translateY(-3px)' : 
+                                 hoveredIcon === 0 || hoveredIcon === 2 ? 'scale(1.02) translateY(-2px)' : 
+                                 'scale(1)',
+                      transformOrigin: 'bottom'
+                    }}
                     aria-label={showFavoritesOnly ? "Show all Pokémon" : `Show favorites (${favorites.length})`}
                     aria-pressed={showFavoritesOnly}
                     title={showFavoritesOnly ? "Show all" : `Favorites (${favorites.length})`}
                 >
                     {showFavoritesOnly ? 
-                      <MdFavorite className="text-red-500 text-xl" aria-hidden="true" /> : 
-                      <MdFavoriteBorder className="text-gray-700 dark:text-gray-300 text-xl" aria-hidden="true" />
+                      <MdFavorite className="text-2xl text-red-500" aria-hidden="true" /> : 
+                      <MdFavoriteBorder className="text-2xl text-gray-700 dark:text-gray-300" aria-hidden="true" />
                     }
                     {favorites.length > 0 && !showFavoritesOnly && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-md">
                         {favorites.length > 99 ? '99+' : favorites.length}
                       </span>
                     )}
@@ -352,35 +440,59 @@ export default function PokemonData() {
                 {showFavoritesOnly && favorites.length > 0 && (
                   <button 
                       onClick={exportFavoritesAsCSV}
-                      className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                      onMouseEnter={() => setHoveredIcon(2)}
+                      onMouseLeave={() => setHoveredIcon(null)}
+                      className="p-2 rounded-xl transition-all duration-300 ease-out"
+                      style={{
+                        transform: hoveredIcon === 2 ? 'scale(1.15) translateY(-3px)' : 
+                                   hoveredIcon === 1 || hoveredIcon === 3 ? 'scale(1.02) translateY(-2px)' : 
+                                   'scale(1)',
+                        transformOrigin: 'bottom'
+                      }}
                       aria-label="Export favorites as CSV"
                       title="Export favorites as CSV (Excel/Sheets)"
                   >
-                      <MdFileDownload className="text-xl text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                      <MdFileDownload className="text-2xl text-gray-700 dark:text-gray-300" aria-hidden="true" />
                   </button>
                 )}
                 <button 
-                    onClick={handleThemeToggle} 
-                    className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                    onClick={handleThemeToggle}
+                    onMouseEnter={() => setHoveredIcon(showFavoritesOnly && favorites.length > 0 ? 3 : 2)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                    className="p-2 rounded-xl transition-all duration-300 ease-out"
+                    style={{
+                      transform: (hoveredIcon === 2 && !(showFavoritesOnly && favorites.length > 0)) || (hoveredIcon === 3 && showFavoritesOnly && favorites.length > 0) ? 'scale(1.15) translateY(-3px)' : 
+                                 (hoveredIcon === 1 && !(showFavoritesOnly && favorites.length > 0)) || (hoveredIcon === 2 && showFavoritesOnly && favorites.length > 0) || (hoveredIcon === 4) ? 'scale(1.02) translateY(-2px)' : 
+                                 'scale(1)',
+                      transformOrigin: 'bottom'
+                    }}
                     aria-label={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
                     aria-pressed={isDarkTheme}
                     title={isDarkTheme ? "Light mode" : "Dark mode"}
                 >
                     {isDarkTheme ? 
-                      <MdLightMode className="text-yellow-400 text-xl" aria-hidden="true" /> : 
-                      <MdDarkMode className="text-gray-700 text-xl" aria-hidden="true" />
+                      <MdLightMode className="text-2xl text-yellow-400" aria-hidden="true" /> : 
+                      <MdDarkMode className="text-2xl text-gray-700" aria-hidden="true" />
                     }
                 </button>
                 <button 
-                    onClick={handleBgMusic} 
-                    className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                    onClick={handleBgMusic}
+                    onMouseEnter={() => setHoveredIcon(showFavoritesOnly && favorites.length > 0 ? 4 : 3)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                    className="p-2 rounded-xl transition-all duration-300 ease-out"
+                    style={{
+                      transform: (hoveredIcon === 3 && !(showFavoritesOnly && favorites.length > 0)) || (hoveredIcon === 4 && showFavoritesOnly && favorites.length > 0) ? 'scale(1.15) translateY(-3px)' : 
+                                 (hoveredIcon === 2 && !(showFavoritesOnly && favorites.length > 0)) || (hoveredIcon === 3 && showFavoritesOnly && favorites.length > 0) ? 'scale(1.02) translateY(-2px)' : 
+                                 'scale(1)',
+                      transformOrigin: 'bottom'
+                    }}
                     aria-label={isBgPlaying ? "Pause background music" : "Play background music"}
                     aria-pressed={isBgPlaying}
                     title={isBgPlaying ? "Music playing" : "Music paused"}
                 >
                     {isBgPlaying ? 
-                      <MdMusicNote className="text-xl text-gray-900 dark:text-white" aria-hidden="true" /> : 
-                      <MdMusicOff className="text-xl text-gray-900 dark:text-white" aria-hidden="true" />
+                      <MdMusicNote className="text-2xl text-gray-900 dark:text-white" aria-hidden="true" /> : 
+                      <MdMusicOff className="text-2xl text-gray-900 dark:text-white" aria-hidden="true" />
                     }
             </button>
             </div>
@@ -447,6 +559,10 @@ export default function PokemonData() {
         </div>
       </header>
 
+      <section 
+        className="container mx-auto px-2 sm:px-4 py-8 min-h-screen transition-colors duration-300 flex flex-col"
+        aria-label="Pokédex application"
+      >
       {error && (
         <div 
           role="alert" 
@@ -563,5 +679,6 @@ export default function PokemonData() {
         </div>
       </footer>
     </section>
+    </div>
   );
 }
