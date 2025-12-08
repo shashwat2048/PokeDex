@@ -1,5 +1,5 @@
 # Robots.txt for Pokédex Swift by Shashwat Shinghal
-# https://poke-dex-eight-ruby.vercel.app/
+# https://pokedex-swift.vercel.app/
 
 User-agent: *
 Allow: /
@@ -10,4 +10,4 @@ Allow: /assets/
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://poke-dex-eight-ruby.vercel.app/sitemap.xml
+Sitemap: https://pokedex-swift.vercel.app/sitemap.xml

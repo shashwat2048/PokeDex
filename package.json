@@ -34,19 +34,19 @@
   ],
   "author": {
     "name": "Shashwat Shinghal",
-    "url": "https://poke-dex-eight-ruby.vercel.app/",
+    "url": "https://pokedex-swift.vercel.app/",
     "email": ""
   },
   "contributors": [
     {
       "name": "Shashwat Shinghal",
-      "url": "https://poke-dex-eight-ruby.vercel.app/"
+      "url": "https://pokedex-swift.vercel.app/"
     }
   ],
   "maintainers": [
     {
       "name": "Shashwat Shinghal",
-      "url": "https://poke-dex-eight-ruby.vercel.app/"
+      "url": "https://pokedex-swift.vercel.app/"
     }
   ],
   "repository": {
@@ -56,7 +56,7 @@
   "bugs": {
     "url": "https://github.com/shashwatshinghal/pokedex-swift/issues"
   },
-  "homepage": "https://poke-dex-eight-ruby.vercel.app/",
+  "homepage": "https://pokedex-swift.vercel.app/",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
