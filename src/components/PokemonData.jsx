@@ -4,6 +4,8 @@ import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { FcSearch } from "react-icons/fc";
 import PokemonModal from "./PokemonModal";
 import logoimg from "../assets/pokeball.png";
+import pikaDancing from "../assets/pika.gif";
+import pikaStatic from "../assets/pika2.gif";
 import { MdMusicNote, MdMusicOff, MdLightMode, MdDarkMode, MdFavorite, MdFavoriteBorder, MdHome, MdFileDownload } from "react-icons/md";
 import bgMusic from "../assets/bgMusic.mp3";
 import themeMusic from "../assets/theme_poke.mp3";
@@ -380,7 +382,7 @@ export default function PokemonData() {
               tabIndex={0}
               aria-label={isThemePlaying ? "Pause theme music" : "Play theme music"}
             />
-          </div>
+          </div>         
           <div
             onClick={goHome}
             className="cursor-pointer"
@@ -393,6 +395,14 @@ export default function PokemonData() {
         Pokédex Swift
         </h1>
           </div>
+          {/* Pikachu Dancing/Static based on music */}
+          <img 
+            src={isBgPlaying || isThemePlaying ? pikaDancing : pikaStatic}
+            alt={isBgPlaying || isThemePlaying ? "Pikachu dancing - Music playing!" : "Pikachu resting"}
+            className="w-16 h-16 object-contain"
+            style={{ imageRendering: 'pixelated' }}
+          />
+          
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:space-x-4 w-full sm:w-auto gap-2">
             <div className="flex items-end gap-3 self-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-2xl" role="group" aria-label="Settings controls">
