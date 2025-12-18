@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import PokemonCard from "./PokemonCard";
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { FcSearch } from "react-icons/fc";
@@ -21,6 +21,7 @@ export default function PokemonData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(""); // Debounced search
   const [currPage, setCurrPage] = useState(1);
   const [selected, setSelected] = useState(null);
   const pageSize = 12;
@@ -35,6 +36,11 @@ export default function PokemonData() {
   const [toastMessage, setToastMessage] = useState('');
   const [hoveredIcon, setHoveredIcon] = useState(null);
   const [logoTilt, setLogoTilt] = useState({ rotateX: 0, rotateY: 0 });
+
+  // ✅ FIX: Reusable audio refs to prevent memory leaks
+  const modalOpenAudioRef = useRef(null);
+  const modalCloseAudioRef = useRef(null);
+  const pikaSoundRef = useRef(null);
 
   const typeColors = {
     normal: 'bg-[#A8A77A]',
@@ -78,10 +84,10 @@ export default function PokemonData() {
     try {
       let pokemonsTofetch = allPokemonData;
       
-      // Filter by search
-      if (search) {
+      // Filter by search (using debounced value)
+      if (debouncedSearch) {
         pokemonsTofetch = allPokemonData.filter(p =>
-          p.name.toLowerCase().includes(search.toLowerCase())
+          p.name.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
       } 
       // Filter by favorites only
@@ -118,23 +124,38 @@ export default function PokemonData() {
     }
   };
 
+  // ✅ FIX: Debounce search input to prevent excessive API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   useEffect(() => {
     fetchAllPokemons();
   }, []);
 
   useEffect(() => {
     fetchPokemonDetails();
-  }, [allPokemonData, currPage, search, showFavoritesOnly]);
+  }, [allPokemonData, currPage, debouncedSearch, showFavoritesOnly]);
 
   // No need for separate favorites effect - we handle it optimistically in toggleFavorite
 
-  const totalpokeCard = search
-    ? allPokemonData.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase())
-      ).length
-    : showFavoritesOnly
-    ? favorites.length
-    : allPokemonData.length;
+  // ✅ FIX: Memoize filtering calculation to prevent unnecessary recalculations
+  const totalpokeCard = useMemo(() => {
+    if (debouncedSearch) {
+      return allPokemonData.filter(p =>
+        p.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+      ).length;
+    }
+    if (showFavoritesOnly) {
+      return favorites.length;
+    }
+    return allPokemonData.length;
+  }, [debouncedSearch, showFavoritesOnly, favorites.length, allPokemonData.length]);
+
   const totalPages = Math.ceil(totalpokeCard / pageSize);
 
   const handlePrev = () => {
@@ -143,21 +164,31 @@ export default function PokemonData() {
   const handleNext = () => {
     if (currPage < totalPages) setCurrPage(prev => prev + 1);
   };
-  function closeModal(audioref) {
-    const audio = new Audio(audioref);
-    audio.volume = 0.5;
-    audio.currentTime = 0.2;
-    audio.play();
-    setSelected(null);
-  }
 
-  function openModal(pokemon, audioref) {
-    const audio = new Audio(audioref);
-    audio.volume = 0.5;
-    audio.currentTime = 0.2;
-    audio.play();
+  // ✅ FIX: Use memoized callbacks to prevent memory leaks
+  const closeModal = useCallback((audioref) => {
+    if (!modalCloseAudioRef.current) {
+      modalCloseAudioRef.current = new Audio(audioref);
+    } else {
+      modalCloseAudioRef.current.src = audioref;
+    }
+    modalCloseAudioRef.current.volume = 0.5;
+    modalCloseAudioRef.current.currentTime = 0.2;
+    modalCloseAudioRef.current.play().catch(err => console.error("Error playing close audio:", err));
+    setSelected(null);
+  }, []);
+
+  const openModal = useCallback((pokemon, audioref) => {
+    if (!modalOpenAudioRef.current) {
+      modalOpenAudioRef.current = new Audio(audioref);
+    } else {
+      modalOpenAudioRef.current.src = audioref;
+    }
+    modalOpenAudioRef.current.volume = 0.5;
+    modalOpenAudioRef.current.currentTime = 0.2;
+    modalOpenAudioRef.current.play().catch(err => console.error("Error playing open audio:", err));
     setSelected(pokemon);
-  }
+  }, []);
 
   const goHome = () =>{
     setSearch("");
@@ -235,39 +266,45 @@ export default function PokemonData() {
     setTimeout(() => setShowToast(false), 2000);
   }
 
-  const playPikaSound = () => {
-    const audio = new Audio(pikaSound);
-    audio.volume = 0.5;
-    audio.currentTime = 0;
-    audio.play().catch((err) => console.error("Error playing Pikachu sound:", err));
-  }
+  // ✅ FIX: Reuse audio object to prevent memory leak
+  const playPikaSound = useCallback(() => {
+    if (!pikaSoundRef.current) {
+      pikaSoundRef.current = new Audio(pikaSound);
+    }
+    pikaSoundRef.current.volume = 0.5;
+    pikaSoundRef.current.currentTime = 0;
+    pikaSoundRef.current.play().catch((err) => console.error("Error playing Pikachu sound:", err));
+  }, []);
 
-  const toggleFavorite = (pokemonId, event) => {
+  // ✅ FIX: Memoize callbacks to prevent unnecessary re-renders
+  const toggleFavorite = useCallback((pokemonId, event) => {
     // Prevent any default behavior and stop propagation
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
     
-    const isFavorite = favorites.includes(pokemonId);
-    
-    if (isFavorite) {
-      showPreferenceSavedToast('Removed from favorites');
-      setFavorites(prev => prev.filter(id => id !== pokemonId));
+    setFavorites(prev => {
+      const isFav = prev.includes(pokemonId);
       
-      // If viewing favorites, immediately remove from display (optimistic update)
-      if (showFavoritesOnly) {
-        setPokeData(prev => prev.filter(p => p.id !== pokemonId));
+      if (isFav) {
+        showPreferenceSavedToast('Removed from favorites');
+        return prev.filter(id => id !== pokemonId);
+      } else {
+        showPreferenceSavedToast('Added to favorites!');
+        return [...prev, pokemonId];
       }
-    } else {
-      showPreferenceSavedToast('Added to favorites!');
-      setFavorites(prev => [...prev, pokemonId]);
+    });
+    
+    // If viewing favorites, immediately remove from display (optimistic update)
+    if (showFavoritesOnly) {
+      setPokeData(prev => prev.filter(p => p.id !== pokemonId));
     }
-  }
+  }, [showFavoritesOnly]);
 
-  const isFavorite = (pokemonId) => {
+  const isFavorite = useCallback((pokemonId) => {
     return favorites.includes(pokemonId);
-  }
+  }, [favorites]);
 
   const exportFavoritesAsCSV = () => {
     if (favorites.length === 0) {

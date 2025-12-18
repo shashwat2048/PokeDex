@@ -1,18 +1,31 @@
 import clsx from "clsx";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, memo } from "react";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import logoimg from "../assets/pokeball.png";
 import ballopen from "../assets/show.mp3";
 import plink from "../assets/plink.mp3";
 import openball from '../assets/openball.png';
 
-export default function PokemonCard({pokemon, openModal, typeColors, isFavorite, toggleFavorite}) {
+function PokemonCard({pokemon, openModal, typeColors, isFavorite, toggleFavorite}) {
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
 
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
-  const audioRef = useRef(new Audio(cryUrl));
+  const audioRef = useRef(null);
+
+  // ✅ FIX: Initialize audio only once and cleanup on unmount
+  useEffect(() => {
+    audioRef.current = new Audio(cryUrl);
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+        audioRef.current = null;
+      }
+    };
+  }, [cryUrl]);
 
   const playCry = () => {
+    if (!audioRef.current) return;
     const audio = audioRef.current;
     audio.pause();
     audio.currentTime = 0;
@@ -152,3 +165,11 @@ export default function PokemonCard({pokemon, openModal, typeColors, isFavorite,
     </li>
     )
 }
+
+// ✅ FIX: Memoize component to prevent unnecessary re-renders
+export default memo(PokemonCard, (prevProps, nextProps) => {
+  return (
+    prevProps.pokemon.id === nextProps.pokemon.id &&
+    prevProps.isFavorite === nextProps.isFavorite
+  );
+});

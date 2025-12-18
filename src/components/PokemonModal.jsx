@@ -13,8 +13,22 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
 
   // Audio for cry
   const cryUrl = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${pokemon.id}.ogg`;
-  const audioRef = useRef(new Audio(cryUrl));
+  const audioRef = useRef(null);
+
+  // ✅ FIX: Initialize audio and cleanup on unmount or pokemon change
+  useEffect(() => {
+    audioRef.current = new Audio(cryUrl);
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+        audioRef.current = null;
+      }
+    };
+  }, [cryUrl]);
+
   const playCry = () => {
+    if (!audioRef.current) return;
     const audio = audioRef.current;
     audio.pause();
     audio.currentTime = 0;
