@@ -1,5 +1,5 @@
 // src/components/PokemonModal.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { MdShare, MdContentCopy } from 'react-icons/md';
 import clsx from 'clsx';
@@ -234,6 +234,8 @@ export default function PokemonModal({ pokemon, closeModal, typeColors }) {
                 alt={`${pokemon.name} ${shiny ? 'shiny' : 'normal'} sprite`}
                 className="cursor-pointer"
                 style={{ imageRendering: 'pixelated', maxHeight: '200px', width: 'auto' }}
+                loading="lazy"
+                decoding="async"
               />
             </button>
           </div>

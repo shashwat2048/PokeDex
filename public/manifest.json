@@ -1,0 +1,54 @@
+{
+  "name": "Pokédex Swift - Interactive Pokemon Encyclopedia",
+  "short_name": "Pokédex Swift",
+  "description": "Explore 1300+ Pokemon with stunning 3D animations, stats, moves, and favorites. The best interactive Pokedex experience!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#d4eeff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/src/assets/pokeball2.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/src/assets/pokeball2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "games", "education"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Search Pokemon",
+      "short_name": "Search",
+      "description": "Search for Pokemon by name",
+      "url": "/?action=search",
+      "icons": [
+        {
+          "src": "/src/assets/pokeball2.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "View Favorites",
+      "short_name": "Favorites",
+      "description": "View your favorite Pokemon",
+      "url": "/?action=favorites",
+      "icons": [
+        {
+          "src": "/src/assets/pokeball2.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
+

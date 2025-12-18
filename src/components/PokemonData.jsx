@@ -12,6 +12,7 @@ import bgMusic from "../assets/bgMusic.mp3";
 import themeMusic from "../assets/theme_poke.mp3";
 import LoaderCard from "./LoaderCard";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import pokemonDB from "../utils/pokemonDB";
 
 
 export default function PokemonData() {
@@ -64,13 +65,32 @@ export default function PokemonData() {
     stellar: 'bg-[#FFD700]',
     };
     
+  // ✅ FIX: Use IndexedDB cache first, then API
   const fetchAllPokemons = async () => {
     try {
+      // Try to get from cache first
+      const cachedData = await pokemonDB.getAllPokemon();
+      
+      if (cachedData) {
+        console.log('📦 Loading Pokemon list from IndexedDB cache');
+        setallPokemonData(cachedData);
+        setLoading(false);
+        return;
+      }
+
+      // Cache miss - fetch from API
+      console.log('🌐 Fetching Pokemon list from API');
       const res = await fetch(API);
       const data = await res.json();
       setallPokemonData(data.results);
+      
+      // Save to cache for next time
+      await pokemonDB.saveAllPokemon(data.results);
+      console.log('💾 Pokemon list cached to IndexedDB');
+      
     } catch (err) {
       setError(err);
+      console.error('Error fetching Pokemon:', err);
     } finally {
       setLoading(false);
     }
@@ -106,12 +126,28 @@ export default function PokemonData() {
         pokemonsTofetch = allPokemonData.slice(offset, offset + pageSize);
       }
       
+      // ✅ FIX: Try cache first for each Pokemon, then fetch if needed
       const details = await Promise.all(
         pokemonsTofetch.map(async p => {
+          const pokemonId = parseInt(p.url.split('/').filter(Boolean).pop());
+          
+          // Try cache first
+          const cached = await pokemonDB.getPokemonDetails(pokemonId);
+          if (cached) {
+            return cached;
+          }
+          
+          // Cache miss - fetch from API
           const r = await fetch(p.url);
-          return r.json();
+          const data = await r.json();
+          
+          // Save to cache asynchronously (don't wait)
+          pokemonDB.savePokemonDetails(data).catch(console.error);
+          
+          return data;
         })
       );
+      
       if(details.length > 0){
         setPokeData(details);
       } else {

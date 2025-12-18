@@ -130,6 +130,8 @@ function PokemonCard({pokemon, openModal, typeColors, isFavorite, toggleFavorite
             alt={`${pokemon.name} official artwork`}
             className="w-24 h-24 cursor-pointer"
             style={{ imageRendering: 'pixelated' }}
+            loading="lazy"
+            decoding="async"
           />
         </button>
       </div>
