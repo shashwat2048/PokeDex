@@ -464,18 +464,17 @@ export default function PokemonData() {
               aria-label={isThemePlaying ? "Pause theme music" : "Play theme music"}
             />
           </div>         
-          <div
-            onClick={goHome}
-            className="cursor-pointer"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') goHome(); }}
-            aria-label="Go to home page - reset search and pagination"
-          >
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center sm:text-left text-gray-900 dark:text-white">
+            <button
+              onClick={goHome}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') goHome(); }}
+              aria-label="Go to home page - reset search and pagination"
+            >
         Pokédex Swift
+            </button>
         </h1>
-          </div>
           {/* Pikachu Dancing/Static based on music */}
           <img 
             src={isBgPlaying || isThemePlaying ? pikaDancing : pikaStatic}
@@ -656,9 +655,11 @@ export default function PokemonData() {
         </div>
       </header>
 
-      <section 
+      <main 
         className="container mx-auto px-2 sm:px-4 py-8 min-h-screen transition-colors duration-300 flex flex-col"
-        aria-label="Pokédex application"
+        id="main-content"
+        role="main"
+        aria-label="Pokédex main content"
       >
       {error && (
         <div 
@@ -680,6 +681,10 @@ export default function PokemonData() {
       </div>
 
       <div className="flex-grow">
+        {/* SEO: H2 heading for main content section */}
+        <h2 className="sr-only">
+          {showFavoritesOnly ? 'Your Favorite Pokémon' : search ? `Pokémon Search Results for "${search}"` : 'Browse All Pokémon'}
+        </h2>
         <ul 
           id="pokemon-grid"
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
@@ -775,7 +780,7 @@ export default function PokemonData() {
           </p>
         </div>
       </footer>
-    </section>
+    </main>
     </div>
   );
 }
